@@ -6,6 +6,7 @@ const logger = require('morgan');
 
 // panggil router
 const authRouter = require("./app/auth/router")
+const farmRouter = require("./app/farm/router")
 
 const app = express();
 const URL = "/api/v1"
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // API
 app.use(`${URL}/auth`, authRouter);
+app.use(`${URL}/farm`, farmRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

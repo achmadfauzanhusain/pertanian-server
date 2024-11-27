@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app"
-import { getFirestore, collection } from "firebase/firestore"
+const { initializeApp } = require("firebase/app")
+const { getFirestore, collection } = require("firebase/firestore")
 
 const firebaseConfig = {
     apiKey: "AIzaSyAnkBSGaeqlRgQAXHJF9PTHa-T-NZNr7Ao",
@@ -13,8 +13,7 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig)
 
-const auth = getAuth()
 const db = getFirestore()
 const colRef = collection(db, "data")
 
-module.exports = { auth, db, colRef }
+module.exports = { db, colRef }
