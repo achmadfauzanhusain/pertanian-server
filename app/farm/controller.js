@@ -4,6 +4,7 @@ const {
     addDoc, deleteDoc, updateDoc, doc, getDoc,
     serverTimestamp
 } = require("firebase/firestore")
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     getFarm: async(req, res) => {
@@ -71,18 +72,19 @@ module.exports = {
             
             // Create the new worker object
             const newWorker = {
-              name,
-              education,
-              yearOfBirth,
-              division,
-            };
+                id: uuidv4(),
+                name,
+                education,
+                yearOfBirth,
+                division,
+            }
             
             // Append the new worker to the existing array
             const updatedWorkers = existingWorkers.concat(newWorker);
             
             // Update the document with the modified workers array
             await updateDoc(docRef, {
-              workers: updatedWorkers,
+                workers: updatedWorkers,
             });
             
             res.status(201).json({ message: "farm updated successfully" })
