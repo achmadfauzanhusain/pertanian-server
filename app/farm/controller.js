@@ -66,6 +66,7 @@ module.exports = {
             // Retrieve the current document and its workers array
             const docSnapshot = await getDoc(docRef);
             const existingWorkers = docSnapshot.data().workers || [];
+            console.log(existingWorkers)
             
             // Create the new worker object
             const newWorker = {
@@ -92,10 +93,21 @@ module.exports = {
     deleteFarmWorkers: async(req, res) => {
         try {
             const { idFarm, idWorker } = req.params
-            const docRef = doc(colRef, idFarm)
+            const docRef = doc(colRef, idFarm);
 
-            const docSnapshot = await getDoc(docRef)
-            const existingWorkers = docSnapshot.data().workers || []
+            // Retrieve the current document and its workers array
+            const docSnapshot = await getDoc(docRef);
+            const existingWorkers = docSnapshot.data().workers || [];
+        
+            // Filter out the worker to be deleted
+            const updatedWorkers = existingWorkers.filter(worker => worker.id !== Number(idWorker))
+        
+            // Update the document with the modified workers array
+            await updateDoc(docRef, {
+                workers: updatedWorkers,
+            });
+        
+            res.status(200).json({ message: "Worker deleted successfully" });
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
