@@ -48,13 +48,10 @@ module.exports = {
     deleteFarm: async(req, res) => {
         try {
             const { idFarm } = req.params
-            if(idFarm) {
-                const docRef = doc(colRef, idFarm)
-                deleteDoc(docRef)
-                res.status(201).json({ message: "farm deleted successfully!" })
-            } else {
-                res.status(400).json({ message: "id Farm not valid!" })
-            }
+            const docRef = doc(colRef, idFarm)
+            deleteDoc(docRef)
+            res.status(201).json({ message: "farm deleted successfully!" })
+            
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
@@ -72,7 +69,7 @@ module.exports = {
             
             // Create the new worker object
             const newWorker = {
-                id: uuidv4(),
+                id: Date.now(),
                 name,
                 education,
                 yearOfBirth,
@@ -88,6 +85,17 @@ module.exports = {
             });
             
             res.status(201).json({ message: "farm updated successfully" })
+        } catch (err) {
+            res.status(500).json({ err: err.message || "Internal server error" })
+        }
+    },
+    deleteFarmWorkers: async(req, res) => {
+        try {
+            const { idFarm, idWorker } = req.params
+            const docRef = doc(colRef, idFarm)
+
+            const docSnapshot = await getDoc(docRef)
+            const existingWorkers = docSnapshot.data().workers || []
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
