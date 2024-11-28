@@ -1,7 +1,7 @@
 const { db, colRef } = require("../../db/firebase")
 const { 
     onSnapshot,
-    addDoc, deleteDoc, updateDoc, doc,
+    addDoc, deleteDoc, updateDoc, doc, getDoc,
     serverTimestamp
 } = require("firebase/firestore")
 
@@ -24,7 +24,7 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    createFarm: async(req, res) => {
+    createFarm: async(req, res) => {cd
         try {
             const { plant, landArea, price, productionCost, yields } = req.body
 
@@ -39,7 +39,7 @@ module.exports = {
                 createdAt: serverTimestamp(),
             })
 
-            res.status(201).json({ message: "Farm created successfully" });
+            res.status(201).json({ message: "farm created successfully" });
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
@@ -50,12 +50,44 @@ module.exports = {
             if(idFarm) {
                 const docRef = doc(colRef, idFarm)
                 deleteDoc(docRef)
-                res.status(201).json({ message: "deleted successfully!" })
+                res.status(201).json({ message: "farm deleted successfully!" })
             } else {
                 res.status(400).json({ message: "id Farm not valid!" })
             }
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ err: err.message || "Internal server error" })
+        }
+    },
+    createFarmWorkers: async(req, res) => {
+        try {
+            const { idFarm } = req.params;
+            const { name, education, yearOfBirth, division } = req.body;
+            
+            const docRef = doc(colRef, idFarm);
+            
+            // Retrieve the current document and its workers array
+            const docSnapshot = await getDoc(docRef);
+            const existingWorkers = docSnapshot.data().workers || [];
+            
+            // Create the new worker object
+            const newWorker = {
+              name,
+              education,
+              yearOfBirth,
+              division,
+            };
+            
+            // Append the new worker to the existing array
+            const updatedWorkers = existingWorkers.concat(newWorker);
+            
+            // Update the document with the modified workers array
+            await updateDoc(docRef, {
+              workers: updatedWorkers,
+            });
+            
+            res.status(201).json({ message: "farm updated successfully" })
+        } catch (err) {
+            res.status(500).json({ err: err.message || "Internal server error" })
         }
     }
 }
