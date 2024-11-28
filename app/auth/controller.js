@@ -37,7 +37,7 @@ module.exports = {
                 return res.status(400).json({ message: `${email} sudah digunakan!` })
             }
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ err: err.message || "Internal server error" })
         }
     },
     login: async(req, res) => {
