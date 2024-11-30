@@ -25,7 +25,7 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    createFarm: async(req, res) => {cd
+    createFarm: async(req, res) => {
         try {
             const { plant, landArea, price, productionCost, yields } = req.body
 
@@ -45,13 +45,32 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
+    // development
+    editFarm: async(req, res) => {
+        try {
+            const { idFarm } = req.params;
+            const { plant, landArea, price, productionCost, yields } = req.body
+
+            const docRef = doc(colRef, idFarm)
+            await updateDoc(docRef, {
+                plant,
+                landArea,
+                price,
+                productionCost,
+                yields
+            })
+
+            res.status(200).json({ message: "farm updated successfully" });
+        } catch (err) {
+            res.status(500).json({ err: err.message || "Internal server error" })
+        }
+    },
     deleteFarm: async(req, res) => {
         try {
             const { idFarm } = req.params
             const docRef = doc(colRef, idFarm)
             deleteDoc(docRef)
             res.status(201).json({ message: "farm deleted successfully!" })
-            
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
@@ -85,7 +104,7 @@ module.exports = {
                 workers: updatedWorkers,
             });
             
-            res.status(201).json({ message: "farm updated successfully" })
+            res.status(201).json({ message: "worker created successfully" })
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
@@ -105,9 +124,9 @@ module.exports = {
             // Update the document with the modified workers array
             await updateDoc(docRef, {
                 workers: updatedWorkers,
-            });
+            })
         
-            res.status(200).json({ message: "Worker deleted successfully" });
+            res.status(200).json({ message: "worker deleted successfully" });
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
