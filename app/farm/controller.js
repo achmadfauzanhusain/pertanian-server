@@ -2,25 +2,35 @@ const { db, colRef } = require("../../db/firebase")
 const { 
     onSnapshot,
     addDoc, deleteDoc, updateDoc, doc, getDoc,
-    serverTimestamp
+    serverTimestamp,
+    query, where
 } = require("firebase/firestore")
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
-    getFarm: async(req, res) => {
+    getFarms: async(req, res) => {
         try {
-            onSnapshot(colRef, (snapshot) => {
+            const q = query(colRef, where("user", "==", req.user.id))
+            await onSnapshot(q, (snapshot) => {
                 let farms = []
                 snapshot.docs.forEach((doc) => {
-                    if(doc.data().user === req.user.id) {
-                        farms.push({ ...doc.data(), id: doc.id })
-                        res.status(200).json({ data: farms })
-                    } else {
-                        res.status(200).json({ message: "have no farm!" })
-                    }
+                    farms.push({ ...doc.data(), id: doc.id })
                 })
-                
+                res.status(200).json({ data: farms })
             })
+        } catch (err) {
+            res.status(500).json({ error: err.message || "Internal server error" })
+        }
+    },
+    // development
+    getDetailFarm: async(req, res) => {
+        try {
+            const { idFarm } = req.params
+
+            const docRef = doc(colRef, idFarm)
+            const farmSnapShot = await getDoc(docRef)
+
+            const farmData = { ...farmSnapShot.data(), id: farmSnapShot.id }
+            res.status(200).json({ data: farmData })
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
@@ -45,7 +55,6 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    // development
     editFarm: async(req, res) => {
         try {
             const { idFarm } = req.params;

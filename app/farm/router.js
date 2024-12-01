@@ -1,10 +1,11 @@
 const express = require("express")
-const { getFarm, createFarm, deleteFarm, createFarmWorkers, deleteFarmWorkers, editFarm } = require("./controller")
+const { getFarms, getDetailFarm, createFarm, deleteFarm, createFarmWorkers, deleteFarmWorkers, editFarm } = require("./controller")
 const { isLoginUser } = require("../middleware/auth")
 
 const router = express.Router()
 
-router.get("/", isLoginUser, getFarm)
+router.get("/", isLoginUser, getFarms)
+router.get("/:idFarm", isLoginUser, getDetailFarm)
 router.post("/", isLoginUser, createFarm)
 router.put("/:idFarm", isLoginUser, editFarm)
 router.delete("/:idFarm", isLoginUser, deleteFarm)
