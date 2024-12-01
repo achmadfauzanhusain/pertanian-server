@@ -13,8 +13,7 @@ module.exports = {
             const isEmail = validator.isEmail(email)
             if(isEmail) {
                 // cek duplikat email
-                const existingEmail = await User.findOne({ email });
-                console.log(existingEmail)
+                const existingEmail = await User.findOne({ email })
                 if (existingEmail) {
                     return res.status(400).json({ message: `email ${email} sudah terdaftar!` });
                 }

@@ -21,7 +21,6 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    // development
     getDetailFarm: async(req, res) => {
         try {
             const { idFarm } = req.params
@@ -94,7 +93,6 @@ module.exports = {
             // Retrieve the current document and its workers array
             const docSnapshot = await getDoc(docRef);
             const existingWorkers = docSnapshot.data().workers || [];
-            console.log(existingWorkers)
             
             // Create the new worker object
             const newWorker = {
