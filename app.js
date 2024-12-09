@@ -4,12 +4,14 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const methodOverride = require('method-override');
+const cors = require("cors")
 
 // panggil router
 const authRouter = require("./app/auth/router")
 const farmRouter = require("./app/farm/router")
 
 const app = express();
+app.use(cors())
 const URL = "/api/v1"
 
 // view engine setup
