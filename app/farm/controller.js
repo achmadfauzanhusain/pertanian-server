@@ -36,10 +36,11 @@ module.exports = {
     },
     createFarm: async(req, res) => {
         try {
-            const { plant, landArea, seed, price, productionCost, yields } = req.body
+            const { nameFarm, plant, landArea, seed, price, productionCost, yields } = req.body
 
             await addDoc(colRef, {
                 user: req.user.id,
+                nameFarm,
                 plant,
                 landArea,
                 seed,
