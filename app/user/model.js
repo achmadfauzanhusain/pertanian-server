@@ -6,20 +6,18 @@ const HASH_ROUND = 10
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
+        required: [true, "username harus diisi!"],
     },
     province: {
         type: String,
-        required: true
+        required: [true, "provinsi harus diisi!"]
     },
     email: {
         type: String,
-        default: "",
-        unique: true
     },
     password: {
         type: String,
-        required: true,
+        required: [true, "password harus diisi!"],
         minlength: 8
     }
 }, { timestamps: true })

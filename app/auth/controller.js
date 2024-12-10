@@ -1,5 +1,4 @@
 const User = require("../user/model")
-const validator = require("validator")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const { jwtkey } = require("../../config")
@@ -8,6 +7,10 @@ module.exports = {
     register: async(req, res) => {
         try {
             const { username, province, password } = req.body
+
+            if (/\s/.test(username)) {
+                return res.status(400).json({ message: "Username tidak boleh mengandung spasi!" })
+            }
 
             const existingUsername = await User.findOne({ username });
             if (existingUsername) {
@@ -22,7 +25,7 @@ module.exports = {
             const savedUser = await newUser.save()
             res.status(201).json({ data: savedUser })
         } catch (err) {
-            res.status(500).json({ err: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
     login: async(req, res) => {
