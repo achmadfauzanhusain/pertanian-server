@@ -59,10 +59,11 @@ module.exports = {
     editFarm: async(req, res) => {
         try {
             const { idFarm } = req.params;
-            const { plant, landArea, seed, price, productionCost, yields } = req.body
+            const { nameFarm, plant, landArea, seed, price, productionCost, yields } = req.body
 
             const docRef = doc(colRef, idFarm)
             await updateDoc(docRef, {
+                nameFarm,
                 plant,
                 landArea,
                 seed,
