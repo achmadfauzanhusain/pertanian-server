@@ -90,7 +90,7 @@ module.exports = {
     createFarmWorkers: async(req, res) => {
         try {
             const { idFarm } = req.params;
-            const { name, education, yearOfBirth, division } = req.body;
+            const { name, education, salary, yearOfBirth, division } = req.body;
             
             const docRef = doc(colRef, idFarm);
             
@@ -103,6 +103,7 @@ module.exports = {
                 id: Date.now(),
                 name,
                 education,
+                salary,
                 yearOfBirth,
                 division,
             }
