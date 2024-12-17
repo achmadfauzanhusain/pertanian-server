@@ -15,5 +15,6 @@ initializeApp(firebaseConfig)
 
 const db = getFirestore()
 const colRef = collection(db, "farms")
+const colRef2 = collection(db, "liveStocks")
 
-module.exports = { db, colRef }
+module.exports = { db, colRef, colRef2 }
