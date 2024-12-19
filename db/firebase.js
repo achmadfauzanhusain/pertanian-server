@@ -1,13 +1,15 @@
 const { initializeApp } = require("firebase/app")
 const { getFirestore, collection } = require("firebase/firestore")
 
+import { firebaseKey, firebaseAuthDomain, firebaseMessaginSenderId, firebaseAppId } from "../config"
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAnkBSGaeqlRgQAXHJF9PTHa-T-NZNr7Ao",
-    authDomain: "pertanian-app.firebaseapp.com",
+    apiKey: firebaseKey,
+    authDomain: firebaseAuthDomain,
     projectId: "pertanian-app",
     storageBucket: "pertanian-app.firebasestorage.app",
-    messagingSenderId: "1049538273775",
-    appId: "1:1049538273775:web:c105859446c3180246d61a",
+    messagingSenderId: firebaseMessaginSenderId,
+    appId: firebaseAppId,
     measurementId: "G-TPM23VF3YR"
 }
 
