@@ -1,7 +1,7 @@
 const { initializeApp } = require("firebase/app")
 const { getFirestore, collection } = require("firebase/firestore")
 
-import { firebaseKey, firebaseAuthDomain, firebaseMessaginSenderId, firebaseAppId } from "../config"
+const { firebaseKey, firebaseAuthDomain, firebaseMessaginSenderId, firebaseAppId } = require("../config")
 
 const firebaseConfig = {
     apiKey: firebaseKey,
