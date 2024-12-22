@@ -5,18 +5,28 @@ const {
     serverTimestamp,
     query, where
 } = require("firebase/firestore")
+const { client } = require("../../db/redis")
 
 module.exports = {
     getFarms: async(req, res) => {
         try {
-            const q = query(colRef, where("user", "==", req.user.id))
-            await onSnapshot(q, (snapshot) => {
-                let farms = []
-                snapshot.docs.forEach((doc) => {
-                    farms.push({ ...doc.data(), id: doc.id })
+            const redisCheck = await client.get(req.user.username)
+            if (redisCheck) {
+                const farms = JSON.parse(redisCheck);
+                return res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
+            } else {
+                const q = query(colRef, where("user", "==", req.user.id))
+                await onSnapshot(q, async(snapshot) => {
+                    let farms = []
+                    snapshot.docs.forEach((doc) => {
+                        farms.push({ ...doc.data(), id: doc.id })
+                    })
+                    res.status(200).json({ data: farms })
+    
+                    // Simpan data ke Redis secara asinkron
+                    client.setEx(req.user.username, 3600, JSON.stringify(farms)).catch(console.error);
                 })
-                res.status(200).json({ data: farms })
-            })
+            }
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
