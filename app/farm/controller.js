@@ -38,7 +38,7 @@ module.exports = {
             const redisCheck = await client.get(idFarm);
             if (redisCheck) {
                 const farms = JSON.parse(redisCheck);
-                return res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
+                res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
             } else {
                 const docRef = doc(colRef, idFarm);
                 onSnapshot(docRef, (docSnapshot) => {
@@ -47,7 +47,6 @@ module.exports = {
     
                     // Simpan data ke Redis secara asinkron
                     client.setEx(idFarm, 1700, JSON.stringify(farmData)).catch(console.error);
-                    res.status(404).json({ error: "Farm not found" });
                 });
             }
         } catch (err) {
