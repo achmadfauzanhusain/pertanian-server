@@ -24,7 +24,7 @@ module.exports = {
                     res.status(200).json({ data: farms })
     
                     // Simpan data ke Redis secara asinkron
-                    client.setEx(req.user.username, 3600, JSON.stringify(farms)).catch(console.error);
+                    client.setEx(req.user.username, 1700, JSON.stringify(farms)).catch(console.error);
                 })
             }
         } catch (err) {
@@ -34,12 +34,20 @@ module.exports = {
     getDetailFarm: async(req, res) => {
         try {
             const { idFarm } = req.params
-
-            const docRef = doc(colRef, idFarm)
-            const farmSnapShot = await getDoc(docRef)
-
-            const farmData = { ...farmSnapShot.data(), id: farmSnapShot.id }
-            res.status(200).json({ data: farmData })
+            const redisCheck = await client.get(idFarm)
+            if(redisCheck) {
+                const farmData = JSON.parse(redisCheck);
+                return res.status(200).json({ data: farmData });
+            } else {
+                const docRef = doc(colRef, idFarm)
+                const farmSnapShot = await getDoc(docRef)
+    
+                const farmData = { ...farmSnapShot.data(), id: farmSnapShot.id }
+                res.status(200).json({ data: farmData })
+    
+                // simpan data ke dalam redis
+                client.setEx(idFarm, 1700, JSON.stringify(farmData))
+            }
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
