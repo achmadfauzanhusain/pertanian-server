@@ -31,27 +31,29 @@ module.exports = {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
-    getDetailFarm: async(req, res) => {
+    getDetailFarm: async (req, res) => {
         try {
             const { idFarm } = req.params
-            const redisCheck = await client.get(idFarm)
-            if(redisCheck) {
-                const farmData = JSON.parse(redisCheck);
-                return res.status(200).json({ data: farmData });
+
+            const redisCheck = await client.get(idFarm);
+            if (redisCheck) {
+                const farms = JSON.parse(redisCheck);
+                return res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
             } else {
-                const docRef = doc(colRef, idFarm)
-                const farmSnapShot = await getDoc(docRef)
+                const docRef = doc(colRef, idFarm);
+                onSnapshot(docRef, (docSnapshot) => {
+                    const farmData = { ...docSnapshot.data(), id: docSnapshot.id };
+                    res.status(200).json({ data: farmData });
     
-                const farmData = { ...farmSnapShot.data(), id: farmSnapShot.id }
-                res.status(200).json({ data: farmData })
-    
-                // simpan data ke dalam redis
-                client.setEx(idFarm, 1700, JSON.stringify(farmData))
+                    // Simpan data ke Redis secara asinkron
+                    client.setEx(idFarm, 1700, JSON.stringify(farmData)).catch(console.error);
+                    res.status(404).json({ error: "Farm not found" });
+                });
             }
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ error: err.message || "Internal server error" });
         }
-    },
+    },    
     createFarm: async(req, res) => {
         try {
             const { nameFarm, plant, landArea, seed, price, productionCost, yields } = req.body
