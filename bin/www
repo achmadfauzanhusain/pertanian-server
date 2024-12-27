@@ -3,6 +3,8 @@ const debug = require('debug')('server:server');
 const http = require('http');
 const db = require("../db")
 
+console.log("server is starting")
+
 var port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
 
