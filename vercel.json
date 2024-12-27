@@ -7,7 +7,7 @@
       { "src": "/api/(.*)", "dest": "app.js" }
     ],
     "env": {
-      "NODE_VERSION": "20.x"
+      "NODE_VERSION": "18.x"
     }
 }
   
