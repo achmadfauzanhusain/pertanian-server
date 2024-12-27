@@ -1,8 +1,8 @@
 {
     "version": 2,
     "builds": [{ "src": "bin/www", "use": "@vercel/node" }],
-    "routes": [{ "src": "/(.*)", "dest": "bin/www" }],
+    "rewrites": [{ "src": "/(.*)", "dest": "bin/www" }],
     "env": {
-      "NODE_VERSION": "18.x"
+      "NODE_VERSION": "22.x"
     }
 }
