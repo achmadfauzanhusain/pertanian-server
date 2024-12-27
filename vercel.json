@@ -1,6 +1,7 @@
 {
     "version": 2,
     "rewrites": [{ "source": "/(.*)", "destination": "bin/www" }],
+    "installCommand": "npm install",
     "env": {
       "NODE_VERSION": "18.x"
     }
