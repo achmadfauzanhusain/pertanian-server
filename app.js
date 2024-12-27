@@ -10,6 +10,8 @@ const cors = require("cors")
 const authRouter = require("./app/auth/router")
 const farmRouter = require("./app/farm/router")
 
+console.log("starting application")
+
 const app = express();
 app.use(cors())
 const URL = "/api/v1"
