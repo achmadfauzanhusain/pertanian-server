@@ -4,11 +4,7 @@
   "private": true,
   "scripts": {
     "build": "echo 'No build step necessary'",
-<<<<<<< HEAD
     "start": "nodemon ./bin/www"
-=======
-    "start": "node ./bin/www"
->>>>>>> 4fecce66e42c966c3c37f1c93643d38d18d1946b
   },
   "type": "commonjs",
   "dependencies": {

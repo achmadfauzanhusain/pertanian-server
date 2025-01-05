@@ -10,8 +10,12 @@ const cors = require("cors")
 const authRouter = require("./app/auth/router")
 const farmRouter = require("./app/farm/router")
 
+const corsOptions = {
+  origin: ['https://kebunmu.com', 'http://localhost:3000']
+};
+
 const app = express();
-app.use(cors())
+app.use(cors(corsOptions))
 const URL = "/api/v1"
 
 // view engine setup
