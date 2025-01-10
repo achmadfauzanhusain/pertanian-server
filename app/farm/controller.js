@@ -5,49 +5,44 @@ const {
     serverTimestamp,
     query, where
 } = require("firebase/firestore")
-const { client } = require("../../db/redis")
 
 module.exports = {
     getFarms: async(req, res) => {
         try {
-            const redisCheck = await client.get(req.user.username)
-            if (redisCheck) {
-                const farms = JSON.parse(redisCheck);
-                return res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
-            } else {
-                const q = query(colRef, where("user", "==", req.user.id))
-                await onSnapshot(q, async(snapshot) => {
-                    let farms = []
+            const q = query(colRef, where("user", "==", req.user.id));
+        
+            // Mendengarkan perubahan data real-time, namun hanya mengirimkan respons sekali
+            let sentResponse = false;
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                if (!sentResponse) {
+                    let farms = [];
                     snapshot.docs.forEach((doc) => {
-                        farms.push({ ...doc.data(), id: doc.id })
-                    })
-                    res.status(200).json({ data: farms })
+                        farms.push({ ...doc.data(), id: doc.id });
+                    });
+                    res.status(200).json({ data: farms });
+                    sentResponse = true;  // Pastikan respons hanya dikirim sekali
+                }
+            });
     
-                    // Simpan data ke Redis secara asinkron
-                    client.setEx(req.user.username, 1700, JSON.stringify(farms)).catch(console.error);
-                })
-            }
+            // Bersihkan listener setelah respons terkirim
+            return () => unsubscribe();
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
     },
     getDetailFarm: async (req, res) => {
         try {
-            const { idFarm } = req.params
-
-            const redisCheck = await client.get(idFarm);
-            if (redisCheck) {
-                const farms = JSON.parse(redisCheck);
-                res.status(200).json({ data: farms }); // Kirim data langsung dari Redis
+            const { idFarm } = req.params;
+            const docRef = doc(colRef, idFarm);
+            
+            // Mengambil dokumen sekali menggunakan getDoc
+            const docSnapshot = await getDoc(docRef);
+            
+            if (docSnapshot.exists()) {
+                const farmData = { ...docSnapshot.data(), id: docSnapshot.id };
+                res.status(200).json({ data: farmData });
             } else {
-                const docRef = doc(colRef, idFarm);
-                onSnapshot(docRef, (docSnapshot) => {
-                    const farmData = { ...docSnapshot.data(), id: docSnapshot.id };
-                    res.status(200).json({ data: farmData });
-    
-                    // Simpan data ke Redis secara asinkron
-                    client.setEx(idFarm, 1700, JSON.stringify(farmData)).catch(console.error);
-                });
+                res.status(404).json({ error: "Farm not found" });
             }
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" });
@@ -70,7 +65,9 @@ module.exports = {
                 createdAt: serverTimestamp(),
             })
 
-            res.status(201).json({ message: "farm created successfully" });
+            res.status(201).json({
+                message: "farm created successfully" 
+            });
         } catch (err) {
             res.status(500).json({ error: err.message || "Internal server error" })
         }
@@ -100,8 +97,8 @@ module.exports = {
         try {
             const { idFarm } = req.params
             const docRef = doc(colRef, idFarm)
-            deleteDoc(docRef)
-            res.status(201).json({ message: "farm deleted successfully!" })
+            await deleteDoc(docRef)
+            res.status(200).json({ message: "farm deleted successfully!" })
         } catch (err) {
             res.status(500).json({ err: err.message || "Internal server error" })
         }
