@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "build": "echo 'No build step necessary'",
-    "start": "nodemon ./bin/www"
+    "start": "node ./bin/www"
   },
   "type": "commonjs",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
