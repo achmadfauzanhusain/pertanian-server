@@ -7,27 +7,39 @@ const {
 } = require("firebase/firestore")
 
 module.exports = {
-    getFarms: async(req, res) => {
+    getFarms: async (req, res) => {
         try {
-            const q = query(colRef, where("user", "==", req.user.id));
-        
-            // Mendengarkan perubahan data real-time, namun hanya mengirimkan respons sekali
-            let sentResponse = false;
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                if (!sentResponse) {
-                    let farms = [];
-                    snapshot.docs.forEach((doc) => {
-                        farms.push({ ...doc.data(), id: doc.id });
-                    });
-                    res.status(200).json({ data: farms });
-                    sentResponse = true;  // Pastikan respons hanya dikirim sekali
-                }
-            });
-    
-            // Bersihkan listener setelah respons terkirim
-            return () => unsubscribe();
+            const q = query(colRef, where("user", "==", req.user.id))
+
+            let sentResponse = false
+
+            const fetchData = new Promise((resolve, reject) => {
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!sentResponse) {
+                        let farms = [];
+                        snapshot.docs.forEach((doc) => {
+                            farms.push({ ...doc.data(), id: doc.id });
+                        });
+                        sentResponse = true;
+                        resolve(farms);
+                    }
+                }, (error) => {
+                    reject(error);
+                });
+
+                // Bersihkan listener setelah respons terkirim
+                setTimeout(() => {
+                    if (!sentResponse) {
+                        unsubscribe();
+                        reject(new Error("Timeout: Data retrieval took too long"));
+                    }
+                }, 5000); // Timeout 5 detik
+            })
+
+            const farms = await fetchData
+            res.status(200).json({ data: farms })
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ error: err.message || "Internal server error" });
         }
     },
     getDetailFarm: async (req, res) => {
