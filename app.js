@@ -11,7 +11,7 @@ const authRouter = require("./app/auth/router")
 const farmRouter = require("./app/farm/router")
 
 const corsOptions = {
-  origin: ['https://kebunmu.com', 'http://localhost:3000']
+  origin: ['https://kebunmu.com', 'https://kebunmu.vercel.app', 'http://localhost:3000']
 };
 
 const app = express();
