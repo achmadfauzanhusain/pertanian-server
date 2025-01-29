@@ -1,7 +1,12 @@
-const User = require("../user/model")
 const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs")
 const { jwtkey } = require("../../config")
+
+const { colUser } = require("../../db/firebase")
+const {
+    addDoc, getDocs,
+    serverTimestamp,
+    query, where,
+} = require("firebase/firestore")
 
 module.exports = {
     register: async(req, res) => {
@@ -9,51 +14,59 @@ module.exports = {
             const { username, province, password } = req.body
 
             if (/\s/.test(username)) {
-                return res.status(400).json({ message: "Username tidak boleh mengandung spasi!" })
+                return res.status(400).json({ message: "username tidak boleh mengandung spasi!" })
             }
 
-            const existingUsername = await User.findOne({ username });
-            if (existingUsername) {
-                return res.status(400).json({ message: `username ${username} sudah terdaftar!` })
+            // Cek duplikat username di Firestore
+            const q = query(colUser, where("username", "==", username));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                return res.status(400).json({ message: `username ${username} sudah terdaftar!` });
             }
 
-            const newUser = new User({
+            await addDoc(colUser, {
+                id: Date.now(),
                 username,
                 province,
                 password,
+                createdAt: serverTimestamp(),
             })
-            const savedUser = await newUser.save()
-            res.status(201).json({ data: savedUser })
+            res.status(201).json({ message: "register berhasil!" })
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
-    login: async(req, res) => {
-        const { username, password } = req.body
-        User.findOne({ username }).then((user) => {
-            if(user) {
-                const checkPassword = bcrypt.compareSync(password, user.password)
-                if(checkPassword) {
+    login: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+
+            const checkUsername = query(colUser, where("username", "==", username));
+            const querySnapshot = await getDocs(checkUsername);
+            
+            if (querySnapshot.empty) {
+                return res.status(403).json({ message: "Data yang anda masukkan salah!" });
+            } else {
+                const userDoc = querySnapshot.docs[0];
+                const userData = userDoc.data();
+
+                if(userData.password === password) {
                     const token = jwt.sign({
                         user: {
-                            id: user._id,
-                            username: user.username,
-                            province: user.province,
-                            email: user.email,
+                            id: userData.id,
+                            username: userData.username,
+                            province: userData.province,
+                            email: userData.email ? userData.email : "",
                         }
-                    }, jwtkey)
-
-                    res.status(200).json({ data: token })
-                } else {
-                    res.status(403).json({
-                        message: `data yang anda masukkan salah!`
-                    })
+                    }, jwtkey);
+                        
+                    res.status(200).json({ data: token });
+                }  else {
+                    return res.status(403).json({ message: "Password salah!" });
                 }
-            } else {
-                res.status(403).json({
-                    message: `data yang anda masukkan salah!`
-                })
             }
-        })
+        } catch (err) {
+            res.status(500).json({ message: err.message || "Internal server error" });
+        }
     }
 }

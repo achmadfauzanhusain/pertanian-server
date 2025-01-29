@@ -1,4 +1,4 @@
-const { db, colRef } = require("../../db/firebase")
+const { colRef } = require("../../db/firebase")
 const { 
     onSnapshot,
     addDoc, deleteDoc, updateDoc, doc, getDoc,
