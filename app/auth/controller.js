@@ -23,16 +23,16 @@ module.exports = {
             
             if (!querySnapshot.empty) {
                 return res.status(400).json({ message: `username ${username} sudah terdaftar!` });
+            } else {
+                await addDoc(colUser, {
+                    id: Date.now(),
+                    username,
+                    province,
+                    password,
+                    createdAt: serverTimestamp(),
+                })
+                res.status(201).json({ message: "register berhasil!" })
             }
-
-            await addDoc(colUser, {
-                id: Date.now(),
-                username,
-                province,
-                password,
-                createdAt: serverTimestamp(),
-            })
-            res.status(201).json({ message: "register berhasil!" })
         } catch (err) {
             res.status(500).json({ message: err.message || "Internal server error" })
         }
