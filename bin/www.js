@@ -1,24 +1,11 @@
 const app = require('../app');
 const debug = require('debug')('server:server');
 const http = require('http');
-const db = require("../db")
 
 console.log("server is starting")
 
 var port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
-
-var server = http.createServer(app);
-
-db.on("error", function(err) {
-  console.log("connection error: tidak bisa terambung ke mongodb")
-})
-
-db.on("open",function() {
-  server.listen(port)
-  server.on("error", onError)
-  server.on("listening", onListening)
-})
 
 function normalizePort(val) {
   var port = parseInt(val, 10);

@@ -39,7 +39,7 @@ module.exports = {
             const farms = await fetchData
             res.status(200).json({ data: farms })
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" });
+            res.status(500).json({ message: err.message || "Internal server error" });
         }
     },
     getDetailFarm: async (req, res) => {
@@ -57,13 +57,13 @@ module.exports = {
                 res.status(404).json({ error: "Farm not found" });
             }
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" });
+            res.status(500).json({ messafe: err.message || "Internal server error" });
         }
     },    
-    createFarm: async(req, res) => {
+    createFarm: async (req, res) => {
         try {
-            const { nameFarm, plant, landArea, seed, price, productionCost, yields } = req.body
-
+            const { nameFarm, plant, landArea, seed, price, productionCost, yields } = req.body;
+    
             await addDoc(colRef, {
                 user: req.user.id,
                 nameFarm,
@@ -75,13 +75,13 @@ module.exports = {
                 yields,
                 workers: [],
                 createdAt: serverTimestamp(),
-            })
-
+            });
+    
             res.status(201).json({
-                message: "farm created successfully" 
+                message: "Farm created successfully",
             });
         } catch (err) {
-            res.status(500).json({ error: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" });
         }
     },
     editFarm: async(req, res) => {
@@ -102,7 +102,7 @@ module.exports = {
 
             res.status(200).json({ message: "farm updated successfully" });
         } catch (err) {
-            res.status(500).json({ err: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
     deleteFarm: async(req, res) => {
@@ -112,7 +112,7 @@ module.exports = {
             await deleteDoc(docRef)
             res.status(200).json({ message: "farm deleted successfully!" })
         } catch (err) {
-            res.status(500).json({ err: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
     createFarmWorkers: async(req, res) => {
@@ -146,7 +146,7 @@ module.exports = {
             
             res.status(201).json({ message: "worker created successfully" })
         } catch (err) {
-            res.status(500).json({ err: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     },
     deleteFarmWorkers: async(req, res) => {
@@ -168,7 +168,7 @@ module.exports = {
         
             res.status(200).json({ message: "worker deleted successfully" });
         } catch (err) {
-            res.status(500).json({ err: err.message || "Internal server error" })
+            res.status(500).json({ message: err.message || "Internal server error" })
         }
     }
 }
