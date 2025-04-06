@@ -13,6 +13,10 @@ module.exports = {
         try {
             const { username, province, password } = req.body
 
+            if (username === "" || province === "" || password === "") {
+                return res.status(400).json({ message: "input tidak boleh kosong!" })
+            }
+
             if (/\s/.test(username)) {
                 return res.status(400).json({ message: "username tidak boleh mengandung spasi!" })
             }
