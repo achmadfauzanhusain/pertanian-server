@@ -21,6 +21,10 @@ module.exports = {
                 return res.status(400).json({ message: "username tidak boleh mengandung spasi!" })
             }
 
+            if (password.length < 8) {
+                return res.status(400).json({ message: "password minimal 8 kata!" })
+            }
+
             // Cek duplikat username di Firestore
             const q = query(colUser, where("username", "==", username));
             const querySnapshot = await getDocs(q);
